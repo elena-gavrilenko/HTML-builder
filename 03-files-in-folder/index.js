@@ -7,7 +7,7 @@ fs.promises.readdir(folder).then((files) => {
   files.forEach((file) => {
     fs.stat(folder + '/' + file, (err, stats) => {
       if (err) throw err;
-      if (!stats.isDirectory()) {
+      if (stats.isFile()) {
         stdout.write(
           `${file.split('.')[0]} - ${path.extname(file).slice(1)} - ${
             stats.size
