@@ -17,19 +17,8 @@ async function copyObjects() {
 
   // записываем файл в папку project-dist
   const folderForSaving = path.join(__dirname, 'project-dist');
-  fs.stat(path.join(__dirname), (errStat, stats) => {
-    // console.log(stats);
-    if (errStat) throw errStat;
-    if (stats.isFile) {
-      fs.copyFile(
-        path.join(__dirname, 'template.html'),
-        path.join(folderForSaving, 'index.html'),
-        (err) => {
-          if (err) throw err;
-        }
-      );
-    }
-  });
+  const newFile = path.join(folderForSaving, 'index.html');
+  fs.promises.writeFile(newFile, '');
 
   // читаем template.html
   const text = await fs.promises.readFile(
