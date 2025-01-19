@@ -10,7 +10,7 @@ async function makeFolder() {
     for (let file of data) {
       if (file.name.split('.')[1] == 'css' && file.isFile()) {
         const readableStream = fs.createReadStream(
-          path.join(fromRead, file.name)
+          path.join(fromRead, file.name),
         );
         readableStream.on('data', (chunk) => {
           fs.promises.appendFile(newStyles, chunk);
