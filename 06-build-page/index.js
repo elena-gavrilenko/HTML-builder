@@ -2,14 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const components = path.join(__dirname, 'components');
 const styles = path.join(__dirname, 'styles');
-const newStyles = path.join(__dirname, 'project-dist', 'styles.css');
+const newStyles = path.join(__dirname, 'project-dist', 'style.css');
 const folderForSaving = path.join(__dirname, 'project-dist');
 const newFile = path.join(folderForSaving, 'index.html');
 const assets = path.join(__dirname, 'assets');
 const newAssets = path.join(folderForSaving, 'assets');
 
 async function createFolder(nameFolder) {
-  //   console.log(nameFolder);
   await fs.promises.rm(path.join(nameFolder), {
     recursive: true,
     force: true,
@@ -37,47 +36,37 @@ async function mergeFilesIntoOne(readFrom) {
 }
 
 async function replacingPartsFile(readFrom, newFile) {
-  //   console.log(newFile);
   const files = await fs.promises.readdir(readFrom);
   let text = await fs.promises.readFile(
     path.join(__dirname, 'template.html'),
     'utf-8',
   );
-
   await Promise.all(
     files.map(async (file) => {
       const stats = await fs.promises.stat(path.join(readFrom, file));
-
-      //   console.log(stats.isFile);
       if (stats.isFile && `${file.split('.')[1]}` === 'html') {
         let re = new RegExp(`{{${file.split('.')[0]}}}`, 'i');
         let fileContent = await fs.promises.readFile(
           path.join(readFrom, file),
           'utf-8',
         );
-        // console.log(fileContent);
         text = text.replace(re, fileContent);
-        // console.log(text);
       }
     }),
   );
   fs.promises.writeFile(newFile, text);
 }
-async function copyDirs(readFrom, writeWhere) {
-  //   console.log(readFrom);
-  const items = await fs.promises.readdir(readFrom);
 
+async function copyDirs(readFrom, writeWhere) {
+  const items = await fs.promises.readdir(readFrom);
   await Promise.all(
     items.map(async (item) => {
-      //   console.log(item);
       const stats = await fs.promises.stat(path.join(readFrom, item));
 
       if (stats.isDirectory()) {
-        console.log(path.join(writeWhere, item));
         await createFolder(path.join(writeWhere, item));
         await copyDirs(path.join(readFrom, item), path.join(writeWhere, item));
       } else {
-        console.log(writeWhere);
         await fs.promises.copyFile(
           path.join(readFrom, item),
           path.join(writeWhere, item),
@@ -90,13 +79,15 @@ async function copyDirs(readFrom, writeWhere) {
 async function copyObjects() {
   // создаем папку 'project-dist'
   await createFolder(folderForSaving);
-  // сливаем стили
+  // сливаем стили  в файл style.css
   mergeFilesIntoOne(styles);
   // записываем файл index.html в папку project-dist
   await fs.promises.writeFile(newFile, '');
   // записываем компоненты в файл index
   replacingPartsFile(components, newFile);
+  // создаем папку assets
   await createFolder(newAssets);
+  // копируем папку assets
   await copyDirs(assets, newAssets);
 }
 copyObjects();
