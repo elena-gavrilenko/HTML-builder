@@ -49,7 +49,7 @@ async function replacingPartsFile(readFrom, newFile) {
       const stats = await fs.promises.stat(path.join(readFrom, file));
 
       //   console.log(stats.isFile);
-      if (stats.isFile) {
+      if (stats.isFile && `${file.split('.')[1]}` === 'html') {
         let re = new RegExp(`{{${file.split('.')[0]}}}`, 'i');
         let fileContent = await fs.promises.readFile(
           path.join(readFrom, file),
@@ -73,9 +73,9 @@ async function copyDirs(readFrom, writeWhere) {
       const stats = await fs.promises.stat(path.join(readFrom, item));
 
       if (stats.isDirectory()) {
-        // console.log(path.join(writeWhere, item));
+        console.log(path.join(writeWhere, item));
         await createFolder(path.join(writeWhere, item));
-        await copyDirs(path.join(readFrom, item));
+        await copyDirs(path.join(readFrom, item), path.join(writeWhere, item));
       } else {
         console.log(writeWhere);
         await fs.promises.copyFile(
@@ -88,10 +88,11 @@ async function copyDirs(readFrom, writeWhere) {
 }
 
 async function copyObjects() {
+  // создаем папку 'project-dist'
   await createFolder(folderForSaving);
-
+  // сливаем стили
   mergeFilesIntoOne(styles);
-  // записываем файл в папку project-dist
+  // записываем файл index.html в папку project-dist
   await fs.promises.writeFile(newFile, '');
   // записываем компоненты в файл index
   replacingPartsFile(components, newFile);
