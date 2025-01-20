@@ -1,13 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const readFrom = path.join(__dirname, 'files');
+const writeWhere = path.join(__dirname, 'files-copy');
 
 async function copyObjects(folder) {
-  await fs.promises.rm(path.join(__dirname, 'files-copy'), {
+  await fs.promises.rm(writeWhere, {
     recursive: true,
     force: true,
   });
-  await fs.promises.mkdir(path.join(__dirname, 'files-copy'), {
+  await fs.promises.mkdir(writeWhere, {
     recursive: true,
   });
   const files = await fs.promises.readdir(folder);
@@ -19,7 +20,7 @@ async function copyObjects(folder) {
       } else {
         fs.promises.copyFile(
           path.join(readFrom, file),
-          path.join(__dirname, 'files-copy', file),
+          path.join(writeWhere, file),
         );
       }
     }),

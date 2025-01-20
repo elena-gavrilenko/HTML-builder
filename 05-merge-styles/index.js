@@ -3,7 +3,7 @@ const path = require('path');
 const fromRead = path.join(__dirname, 'styles');
 const newStyles = path.join(__dirname, 'project-dist', 'bundle.css');
 
-async function makeFolder() {
+async function mergeFilesIntoOne() {
   fs.readdir(fromRead, { withFileTypes: true }, (err, data) => {
     if (err) throw err;
     fs.promises.writeFile(newStyles, '');
@@ -20,4 +20,4 @@ async function makeFolder() {
   });
 }
 
-makeFolder();
+mergeFilesIntoOne();
